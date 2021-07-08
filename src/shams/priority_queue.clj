@@ -132,3 +132,79 @@
   [priority-queue element]
   (when-let [element->priority (priority-queue->element->priority priority-queue)]
     (element->priority element)))
+
+user=> (pq/priority-queue #(mod % 5))
+() ;; creates an empty priority queue
+
+
+user=> (pq/priority-queue #(mod % 5) :elements [1 2 3 4 5 6])
+(4 3 2 1 6 5)
+
+
+user=> (-> (pq/priority-queue #(mod % 5)) (conj 6) (conj 2) (conj 5) (conj 7))
+(2 7 6 5)
+
+user=> (into (pq/priority-queue #(mod % 5)) [6 2 5 7])
+(2 7 6 5)
+
+user=> (def p (pq/priority-queue #(mod % 5) :elements [1 2 3 4 5 6]))
+#'user/p
+user=> (peek p)
+4
+user=> (pop p)
+(3 2 1 6 5)
+
+
+user=> (def p (pq/priority-queue #(mod % 5) :elements [1 2 3 4 5 6] :priority-comparator compare))
+user=> p
+(5 1 6 2 3 4)
+#'user/p
+user=> (peek p)
+5
+user=> (pop p)
+(1 6 2 3 4)
+
+user=> (count (pq/priority-queue #(mod % 5)))
+0
+user=> (count (pq/priority-queue #(mod % 5) :elements [1 2]))
+2
+user=> (empty? (pq/priority-queue #(mod % 5)))
+true
+user=> (empty? (pq/priority-queue #(mod % 5) :elements [1 2]))
+false
+
+user=> (priority-queue? (pq/priority-queue #(mod % 5)))
+true
+user=> (priority-queue? [])
+false
+
+user=> (priority-queue->available-priorities (pq/priority-queue #(mod % 5) :elements [1 2 3 6]))
+(3 2 1)
+user=> (priority-queue->top-priority (pq/priority-queue #(mod % 5) :elements [1 2 3 6]))
+3
+
+user=> (priority-queue->element->priority (pq/priority-queue int))
+#object[clojure.core$int 0xe8110ef "clojure.core$int@e8110ef"]
+
+
+user=> (priority-for (pq/priority-queue #(mod % 5)) 9)
+4
+
+
+user=> (def p1 (pq/priority-queue #(mod % 2) :elements [3 4 5 6 7 5] :variant :queue))
+#'user/p1
+user=> p1
+(3 5 7 5 4 6)
+user=> (peek p1)
+3
+user=> (pop p1)
+(5 7 5 4 6)
+
+user=> (def p2 (pq/priority-queue #(mod % 2) :elements [3 4 5 6 7 5] :variant :set))
+#'user/p2
+user=> p2
+(7 3 5 4 6)
+user=> (peek p2)
+7
+user=> (pop p2)
+(3 5 4 6)
